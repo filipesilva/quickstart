@@ -1,0 +1,24 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/quickstart
+    docker:
+      - image: angular/ngcontainer
+    steps:
+      - checkout
+      - restore_cache:
+          key: quickstart-{{ .Branch }}-{{ checksum "yarn.lock" }}
+      - run: yarn --frozen-lockfile
+      - save_cache:
+          key: quickstart-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - "node_modules"
+      # - run:
+      #     name: Running X virtual framebuffer
+      #     command: Xvfb :99 -screen 0 1280x1024x24
+      #     background: true
+      # - run: |
+      #     export DISPLAY=:99.0
+      #     npm run test:once
+      # - run: xvfb-run -a npm run test:once
+      - run: xvfb-run -a npm run e2e
